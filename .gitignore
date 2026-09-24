@@ -1,0 +1,75 @@
+# Python
+__pycache__/
+*.py[cod]
+*.so
+*.egg-info/
+.eggs/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.pyre/
+.coverage
+.coverage.*
+htmlcov/
+build/
+dist/
+*.egg
+
+# Virtual environments
+.venv/
+venv/
+env/
+ENV/
+**/.venv/
+**/venv/
+**/env/
+**/ENV/
+
+# Node / frontend
+node_modules/
+**/node_modules/
+.next/
+out/
+coverage/
+.npm/
+.pnpm-store/
+*.tsbuildinfo
+**/.turbo/
+**/.cache/
+
+# Environment / secrets
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.crt
+
+# Logs / temp files
+*.log
+logs/
+tmp/
+temp/
+*.tmp
+*.pid
+*.swp
+*.swo
+*.bak
+*.orig
+
+# Databases
+*.sqlite3
+*.db
+*.db-journal
+
+# OS / editor
+.DS_Store
+**/.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Project generated artifacts
+docs/pdf/*.pdf
+READ_ME.md
+SOJIP-Plan.md

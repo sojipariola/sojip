@@ -1,0 +1,101 @@
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: sojip-postgres
+    stop_signal: SIGTERM
+    stop_grace_period: 60s
+    environment:
+      POSTGRES_USER: sojip_user
+      POSTGRES_PASSWORD: sojip_pass
+      POSTGRES_DB: sojip_db
+      PGUSER: sojip_user
+      PGPASSWORD: sojip_pass
+      PGDATABASE: sojip_db
+      POSTGRES_INITDB_ARGS: "--nosync"
+    command:
+      - "postgres"
+      - "-c"
+      - "fsync=off"
+      - "-c"
+      - "synchronous_commit=off"
+    ports:
+      - "5434:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "PGPASSWORD=$${PGPASSWORD} psql -U $${PGUSER} -d $${PGDATABASE} -c 'SELECT 1' || exit 1"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+      start_period: 60s
+
+  redis:
+    image: redis:7-alpine
+    container_name: sojip-redis
+    stop_signal: SIGTERM
+    stop_grace_period: 60s
+    ports:
+      - "6381:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.dev
+    container_name: sojip-backend
+    user: "${UID:-1000}:${GID:-1000}"
+    env_file:
+      - .env
+    environment:
+      - ENVIRONMENT=development
+      - DATABASE_URL=postgresql+asyncpg://sojip_user:sojip_pass@postgres:5432/sojip_db
+      - REDIS_URL=redis://redis:6379/0
+      - SECRET_KEY=dev-secret-key-change-in-production
+      - AI_BACKEND=ollama
+      - OLLAMA_URL=http://ollama:11434/v1
+      - OLLAMA_MODEL=qwen3:8b
+      - AI_CONTEXT_LENGTH=8192
+    ports:
+      - "8020:8000"
+    volumes:
+      - ./backend:/app
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.dev
+    container_name: sojip-frontend
+    environment:
+      - NEXT_PUBLIC_API_URL=http://localhost:8020/api/v1
+    ports:
+      - "3001:3000"
+    volumes:
+      - ./frontend:/app
+      - /app/.next
+    depends_on:
+      - backend
+    command: npm run dev
+
+  ollama:
+    image: ollama/ollama:latest
+    container_name: sojip-ollama
+    stop_signal: SIGTERM
+    stop_grace_period: 60s
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_data:/root/.ollama
+
+volumes:
+  postgres_data:
+  ollama_data:

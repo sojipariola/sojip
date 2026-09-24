@@ -1,0 +1,19 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-offwhite text-slate-800 antialiased;
+  }
+  h1, h2, h3, h4 {
+    @apply font-semibold tracking-tight text-slate-900;
+  }
+}
+
+@layer components {
+  .phase-chip {
+    @apply inline-flex items-center rounded-full px-3 py-1 text-xs font-medium
+           bg-slate-100 text-slate-600 border border-slate-200;
+  }
+}
