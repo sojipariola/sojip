@@ -36,6 +36,24 @@ from app.main import app  # noqa: E402
 # work both in the local container (/app) and in CI (~/work/.../backend).
 BACKEND_ROOT = Path(__file__).resolve().parent.parent
 
+# ─── Test-only engine with NullPool ──────────────────────
+# A pooled asyncpg connection cannot be cleanly closed across event
+# loops, and pytest-asyncio creates a fresh loop per test. NullPool
+# opens a new connection per checkout and closes it immediately,
+# which removes the cross-loop state entirely.
+from sqlalchemy.ext.asyncio import create_async_engine  # noqa: E402
+from sqlalchemy.pool import NullPool  # noqa: E402
+
+import app.core.database as _db_module  # noqa: E402
+
+_test_engine = create_async_engine(
+    os.environ["DATABASE_URL"],
+    poolclass=NullPool,
+    echo=False,
+)
+_db_module.engine = _test_engine
+engine = _test_engine  # rebind the name conftest imports too
+
 
 # ─── Alembic migrations ──────────────────────────────────
 @pytest.fixture(scope="session", autouse=True)

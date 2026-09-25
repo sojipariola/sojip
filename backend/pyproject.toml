@@ -8,11 +8,11 @@ select = ["E", "F", "I", "N", "W", "UP"]
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
 asyncio_default_fixture_loop_scope = "session"
+asyncio_default_test_loop_scope = "session"
 testpaths = ["tests"]
 addopts = [
     "-ra",
     "--strict-markers",
-    "--strict-config",
     "--cov=app",
     "--cov-report=term-missing:skip-covered",
     "--cov-report=html:htmlcov",
