@@ -140,6 +140,11 @@ class AIService:
             except json.JSONDecodeError:
                 pass
 
+        # Fallback: repair truncated JSON by closing dangling strings and brackets.
+        repaired = _repair_truncated_json(text)
+        if repaired is not None:
+            return repaired
+
         raise AIServiceError(
             f"AI returned non-JSON content (first 300 chars): {raw[:300]}"
         )
@@ -193,3 +198,56 @@ def get_ai_service() -> AIService:
     if _ai_service is None:
         _ai_service = AIService()
     return _ai_service
+
+
+def _repair_truncated_json(text: str) -> dict | None:
+    """
+    Best-effort repair for JSON truncated mid-stream.
+
+    Walks the string tracking string/escape state and bracket depth, then
+    closes any open strings and appends the missing closing brackets.
+    """
+    if not text.strip():
+        return None
+
+    in_string = False
+    escape = False
+    stack: list[str] = []
+
+    for ch in text:
+        if escape:
+            escape = False
+            continue
+        if ch == "\\":
+            if in_string:
+                escape = True
+            continue
+        if ch == '"':
+            in_string = not in_string
+            continue
+        if in_string:
+            continue
+        if ch in "{[":
+            stack.append(ch)
+        elif ch in "}]":
+            if stack:
+                stack.pop()
+
+    suffix = ""
+    if in_string:
+        suffix += '"'
+    stripped = (text + suffix).rstrip()
+    if stripped.endswith(","):
+        stripped = stripped[:-1]
+    elif stripped.endswith(":"):
+        stripped += " null"
+
+    closers = {"{": "}", "[": "]"}
+    while stack:
+        opener = stack.pop()
+        stripped += closers[opener]
+
+    try:
+        return json.loads(stripped)
+    except json.JSONDecodeError:
+        return None

@@ -30,12 +30,14 @@ from app.main import app  # noqa: E402
 
 
 # ─── Event loop ──────────────────────────────────────────
-@pytest.fixture(scope="session")
-def event_loop():
-    """Single loop for the whole session so async fixtures can share state."""
-    loop = asyncio.new_event_loop()
-    yield loop
-    loop.close()
+# pytest-asyncio==0.24.0 requires a session-scoped event loop fixture to be defined in conftest.py.
+# pytest-asyncio 0.24 handles loop scope via asyncio_default_fixture_loop_scope — no manual fixture needed.
+# @pytest.fixture(scope="session")
+# def event_loop():
+#     """Single loop for the whole session so async fixtures can share state."""
+#     loop = asyncio.new_event_loop()
+#     yield loop
+#     loop.close()
 
 
 # ─── Alembic migrations ──────────────────────────────────
@@ -51,7 +53,7 @@ def _apply_migrations():
     import sys
 
     result = subprocess.run(
-        [sys.executable, "-m", "alembic", "upgrade", "head"],
+        ["alembic", "upgrade", "head"],
         cwd="/app",
         capture_output=True,
         text=True,

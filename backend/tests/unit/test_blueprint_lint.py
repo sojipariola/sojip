@@ -12,7 +12,7 @@ def _node(id_: str, kind: str, label: str = "", tech: list | None = None) -> Dia
         id=id_,
         label=label or id_,
         kind=kind,
-        tech_stack=tech or ["some-tech"],
+        tech_stack=["some-tech"] if tech is None else tech,
         position={"x": 0, "y": 0},
     )
 

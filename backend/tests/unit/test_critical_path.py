@@ -17,7 +17,7 @@ pytestmark = pytest.mark.unit
 def _t(name: str, days: int, deps: list | None = None) -> Task:
     return Task(
         id=uuid4(),
-        name=name,
+        name=f"Task {name}",
         estimate_days=days,
         dependencies=deps or [],
     )
@@ -90,10 +90,10 @@ def test_earliest_start_respects_dependencies():
 
 
 def test_cycle_detection():
-    a = _t("A", 1)
-    b = _t("B", 1, [a.id])
-    # Manually create a cycle: A depends on B (mutating the frozen-ish model)
-    a.dependencies = [b.id]
+    a_id = uuid4()
+    b_id = uuid4()
+    a = Task(id=a_id, name="Task A", estimate_days=1, dependencies=[b_id])
+    b = Task(id=b_id, name="Task B", estimate_days=1, dependencies=[a_id])
     g = TaskGraph(tasks=[a, b])
 
     assert has_cycle(g)

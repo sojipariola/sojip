@@ -162,8 +162,8 @@ def compute_schedule(
 def has_cycle(graph: TaskGraph) -> bool:
     """Returns True if the graph contains a cycle."""
     try:
-        _, in_degree = _build_adjacency(graph.tasks)
-        _topological_sort(graph.tasks, _build_adjacency(graph.tasks)[0], in_degree)
+        adjacency, in_degree = _build_adjacency(graph.tasks)
+        _topological_sort(graph.tasks, adjacency, in_degree)
         return False
     except TaskGraphError:
         return True
