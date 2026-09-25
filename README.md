@@ -1,6 +1,9 @@
 # SOJIP
 
+[![CI](https://github.com/sojipariola/sojip/actions/workflows/ci.yml/badge.svg)](https://github.com/sojipariola/sojip/actions/workflows/ci.yml)
+
 **S**eed · **O**ffspring · **J**ourney · **I**nnovation · **P**latform
+...
 
 A phase-gated, multi-tenant educational platform that guides students,
 teachers, and innovators from abstract ideas to deployable code.
