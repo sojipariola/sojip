@@ -5,7 +5,7 @@ Manages the retrospective artifact — the terminal reflection that
 closes a project. Additional maintenance capabilities (releases,
 issues, analytics, handoff) arrive in later sub-deliveries.
 """
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 from uuid import UUID
 
@@ -18,8 +18,8 @@ from app.models.artifact import Artifact
 from app.repositories.artifact import ArtifactRepository
 from app.repositories.project import ProjectRepository
 from app.schemas.retrospective import (
-    CritiqueResponse,
     MIN_WORDS,
+    CritiqueResponse,
     RetrospectiveContent,
     RetrospectiveDocument,
     RetrospectivePatch,
@@ -220,7 +220,7 @@ async def critique_retrospective(
     # Persist the critique in the artifact
     doc.ai_critique = (concern or "") + (" | " if concern else "") + reasoning
     doc.ai_passed = passed
-    doc.submitted_at = datetime.now(timezone.utc)
+    doc.submitted_at = datetime.now(UTC)
     artifact.data = doc.model_dump(mode="json")
     await db.flush()
 

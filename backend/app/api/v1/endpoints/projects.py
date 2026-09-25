@@ -24,6 +24,7 @@ router = APIRouter()
 async def _count_projects(db, ctx):
     """Count the tenant's existing projects for the plan gate."""
     from sqlalchemy import func, select
+
     from app.models.project import Project
     stmt = (
         select(func.count())
@@ -181,8 +182,9 @@ async def delete_project(
     # Guard 3: work-in-progress check
     has_content = False
     if not payload.force:
-        from app.models.artifact import Artifact
         from sqlalchemy import select as _select
+
+        from app.models.artifact import Artifact
 
         stmt = (
             _select(Artifact)

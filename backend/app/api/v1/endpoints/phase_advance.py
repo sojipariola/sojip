@@ -23,8 +23,6 @@ from app.core.idea_gate import (
 )
 from app.core.phases import (
     PHASE_ARTIFACT_KIND,
-    is_valid_phase,
-    label_for,
     next_phase,
 )
 from app.core.tenant_context import TenantContext
@@ -112,8 +110,8 @@ async def _evaluate_idea_gate(project, ctx, db):
 
 
 async def _evaluate_plan_gate(project, ctx, db):
-    from app.schemas.plan import TaskGraph
     from app.core.critical_path import compute_schedule, has_cycle
+    from app.schemas.plan import TaskGraph
 
     artifact_repo = ArtifactRepository(db, ctx)
     artifact = await artifact_repo.get_current(project.id, "task_graph")
@@ -163,8 +161,8 @@ async def _evaluate_plan_gate(project, ctx, db):
 
 
 async def _evaluate_blueprint_gate(project, ctx, db):
-    from app.schemas.blueprint import SystemDiagram
     from app.core.blueprint_lint import lint_diagram
+    from app.schemas.blueprint import SystemDiagram
 
     artifact_repo = ArtifactRepository(db, ctx)
     artifact = await artifact_repo.get_current(project.id, "system_diagram")
@@ -224,6 +222,7 @@ async def _evaluate_deployment_gate(project, ctx, db):
     3. At least one deployment has env vars documented
     """
     from types import SimpleNamespace
+
     from app.models.deployment import Deployment
 
     stmt = (

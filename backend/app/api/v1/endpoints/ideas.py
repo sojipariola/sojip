@@ -14,7 +14,6 @@ from app.core.tenant_context import TenantContext
 from app.repositories.project import ProjectRepository
 from app.repositories.validation import PeerValidationRepository
 from app.schemas.validation import (
-    GateCheckResult,
     ValidationCreate,
     ValidationRead,
 )

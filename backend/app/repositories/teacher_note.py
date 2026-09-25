@@ -1,6 +1,4 @@
-from uuid import UUID
 
-from sqlalchemy import select
 
 from app.core.repository import TenantRepository
 from app.models.teacher_note import TeacherNote

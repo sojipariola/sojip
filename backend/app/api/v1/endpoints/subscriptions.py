@@ -3,12 +3,12 @@ Subscription endpoints.
 
 Admin-only. Manage which plan a tenant is on.
 
-  GET    /subscriptions              — list all subscriptions (this tenant only? no — platform admin)
+  GET    /subscriptions              — list all subscriptions (platform admin)
   GET    /subscriptions/me           — the current tenant's active subscription
   PATCH  /subscriptions/me           — change the current tenant's plan (admin only)
   GET    /subscriptions/tenant/{id}  — a specific tenant's subscription
 """
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException, status
@@ -18,10 +18,10 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.api.v1.dependencies import get_tenant_context, get_tenant_db
 from app.core.tenant_context import TenantContext
 from app.models.plan import (
-    Plan,
     STATUS_ACTIVE,
     STATUS_CANCELED,
     STATUS_TRIALING,
+    Plan,
     Subscription,
 )
 from app.schemas.billing import (
@@ -102,7 +102,7 @@ async def change_my_subscription(
             detail=f"Plan '{payload.plan_slug}' not found",
         )
 
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
 
     # Cancel the existing active subscription if present
     existing = await _load_active_subscription(ctx.tenant_id, db)

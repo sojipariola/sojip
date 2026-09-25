@@ -8,12 +8,10 @@ speaks this schema can render or edit it.
 
 Schema version is explicit so we can evolve without breaking.
 """
-from datetime import datetime
 from typing import Any, Literal
 from uuid import UUID
 
 from pydantic import BaseModel, ConfigDict, Field
-
 
 LayoutMode = Literal["free", "stacked", "grid"]
 

@@ -17,6 +17,7 @@ Endpoints:
 
   POST   /projects/{id}/artifacts/{kind}/critique       per-field AI critique
 """
+from datetime import UTC
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException, status
@@ -29,7 +30,6 @@ from app.models.remark import (
     KIND_COMMENT,
     KIND_CRITIQUE,
     ROLE_AI,
-    ROLE_TEACHER,
     Remark,
 )
 from app.repositories.artifact import ArtifactRepository
@@ -198,9 +198,9 @@ async def lock_artifact(
             detail="Artifact is already locked",
         )
 
-    from datetime import datetime, timezone
+    from datetime import datetime
 
-    artifact.locked_at = datetime.now(timezone.utc)
+    artifact.locked_at = datetime.now(UTC)
     artifact.locked_by = ctx.user_id
     await db.flush()
     return artifact

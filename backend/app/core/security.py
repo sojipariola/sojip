@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 from uuid import UUID
 
 from jose import jwt
@@ -30,7 +30,7 @@ def create_access_token(
     to load the User in a tenant-scoped way.
     """
     expires_delta = timedelta(hours=settings.jwt_expiry_hours)
-    expire = datetime.now(timezone.utc) + expires_delta
+    expire = datetime.now(UTC) + expires_delta
 
     payload = {
         "sub": str(user_id),
@@ -38,7 +38,7 @@ def create_access_token(
         "role": role,
         "skill_tier": skill_tier,
         "exp": expire,
-        "iat": datetime.now(timezone.utc),
+        "iat": datetime.now(UTC),
     }
 
     token = jwt.encode(

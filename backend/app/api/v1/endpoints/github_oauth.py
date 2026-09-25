@@ -10,7 +10,7 @@ Endpoints:
 Requires GITHUB_CLIENT_ID, GITHUB_CLIENT_SECRET, and TOKEN_ENCRYPTION_KEY
 in .env. See README for setup.
 """
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from urllib.parse import urlencode
 
 import httpx
@@ -19,8 +19,8 @@ from fastapi.responses import RedirectResponse
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.v1.dependencies import get_current_user
-from app.core.database import get_db
 from app.config import settings
+from app.core.database import get_db
 from app.core.token_crypto import encrypt_token
 from app.models.user import User
 
@@ -130,7 +130,7 @@ async def github_oauth_callback(
 
     user.github_username = github_username
     user.github_token_encrypted = encrypt_token(access_token)
-    user.github_connected_at = datetime.now(timezone.utc)
+    user.github_connected_at = datetime.now(UTC)
     await db.commit()
 
     # Redirect back to the frontend
@@ -169,7 +169,7 @@ async def get_repo_info(
             detail="GitHub not connected",
         )
 
-    from app.core.token_crypto import decrypt_token, TokenCryptoError
+    from app.core.token_crypto import TokenCryptoError, decrypt_token
     try:
         token = decrypt_token(user.github_token_encrypted)
     except TokenCryptoError:
@@ -228,7 +228,7 @@ async def list_repo_commits(
             detail="GitHub not connected",
         )
 
-    from app.core.token_crypto import decrypt_token, TokenCryptoError
+    from app.core.token_crypto import TokenCryptoError, decrypt_token
     try:
         token = decrypt_token(user.github_token_encrypted)
     except TokenCryptoError:
@@ -328,7 +328,7 @@ async def save_file_contents(
             detail="path and content are required",
         )
 
-    from app.core.token_crypto import decrypt_token, TokenCryptoError
+    from app.core.token_crypto import TokenCryptoError, decrypt_token
     try:
         token = decrypt_token(user.github_token_encrypted)
     except TokenCryptoError:
@@ -338,6 +338,7 @@ async def save_file_contents(
         )
 
     import base64
+
     import httpx
 
     # Fetch the current SHA if not provided (GitHub requires sha for updates)
@@ -419,7 +420,7 @@ async def get_repo_tree(
             detail="GitHub not connected",
         )
 
-    from app.core.token_crypto import decrypt_token, TokenCryptoError
+    from app.core.token_crypto import TokenCryptoError, decrypt_token
     try:
         token = decrypt_token(user.github_token_encrypted)
     except TokenCryptoError:
@@ -504,7 +505,7 @@ async def get_file_contents(
             detail="GitHub not connected",
         )
 
-    from app.core.token_crypto import decrypt_token, TokenCryptoError
+    from app.core.token_crypto import TokenCryptoError, decrypt_token
     try:
         token = decrypt_token(user.github_token_encrypted)
     except TokenCryptoError:
@@ -514,6 +515,7 @@ async def get_file_contents(
         )
 
     import base64
+
     import httpx
 
     async with httpx.AsyncClient(timeout=30.0) as client:
@@ -578,7 +580,7 @@ async def github_orgs(
     if not user.github_token_encrypted:
         return {"orgs": [], "connected": False}
 
-    from app.core.token_crypto import decrypt_token, TokenCryptoError
+    from app.core.token_crypto import TokenCryptoError, decrypt_token
 
     try:
         token = decrypt_token(user.github_token_encrypted)

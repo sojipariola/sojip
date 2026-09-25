@@ -4,7 +4,7 @@ Deployment endpoints.
 Manages deployment attempts: creation, status, health checks, env
 vars (encrypted), and rollback history.
 """
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from uuid import UUID
 
 import httpx
@@ -13,8 +13,8 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.v1.dependencies import get_tenant_context, get_tenant_db
-from app.core.tenant_context import TenantContext
 from app.core.deploy_scripts import generate_deploy_script, generate_env_example
+from app.core.tenant_context import TenantContext
 from app.core.token_crypto import TokenCryptoError, decrypt_token, encrypt_token
 from app.models.deployment import ENVIRONMENTS, STATUSES, TARGETS, Deployment
 from app.repositories.project import ProjectRepository
@@ -98,7 +98,7 @@ def _to_read(deployment: Deployment) -> DeploymentRead:
 
 async def _run_health_check(deployment: Deployment, db: AsyncSession) -> HealthCheckResult:
     """Ping the deployment URL and record the result."""
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
     deployment.health_check_at = now
 
     if not deployment.url:
@@ -291,7 +291,7 @@ async def create_deployment(
         if v:
             encrypted[k] = encrypt_token(v)
 
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
     deployment = Deployment(
         tenant_id=ctx.tenant_id,
         project_id=project_id,

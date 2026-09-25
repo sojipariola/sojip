@@ -1,7 +1,5 @@
 from uuid import UUID
 
-from sqlalchemy import select
-
 from app.core.repository import TenantRepository
 from app.models.remark import Remark
 

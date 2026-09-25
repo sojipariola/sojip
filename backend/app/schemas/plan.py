@@ -1,7 +1,7 @@
 from datetime import date
 from uuid import UUID, uuid4
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, Field
 
 
 class Task(BaseModel):

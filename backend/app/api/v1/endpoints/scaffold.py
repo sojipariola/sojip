@@ -5,9 +5,8 @@ Two routers:
 - `router` — job management under /projects/{id}/scaffold/*
 - `templates_router` — the template catalog at /scaffold/templates
 """
-import asyncio
 import re
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from uuid import UUID
 
 from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, status
@@ -16,7 +15,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.v1.dependencies import get_current_user, get_tenant_context, get_tenant_db
 from app.config import settings
-from app.core.database import AsyncSessionLocal, get_db
+from app.core.database import AsyncSessionLocal
 from app.core.github_client import (
     GitHubError,
     create_initial_commit,
@@ -58,7 +57,7 @@ async def _append_log(job_id, stage_name: str, progress: int, extra: dict | None
         job.current_stage = stage_name
         job.progress = progress
         entry = {
-            "at": datetime.now(timezone.utc).isoformat(),
+            "at": datetime.now(UTC).isoformat(),
             "stage": stage_name,
             "progress": progress,
         }
@@ -76,7 +75,7 @@ async def _mark_failed(job_id, error_message: str):
             return
         job.status = "failed"
         job.error_message = error_message
-        job.completed_at = datetime.now(timezone.utc)
+        job.completed_at = datetime.now(UTC)
         await db.commit()
 
 
@@ -155,7 +154,6 @@ async def _run_real_scaffold(
         await _mark_failed(job_id, "GitHub: " + str(e) + " (" + e.detail + ")")
         return
 
-    owner_login = repo_data["owner"]["login"] if isinstance(repo_data.get("owner"), dict) else repo_data.get("owner", {}).get("login", "")
     repo_full_name = repo_data["full_name"]
     repo_html_url = repo_data["html_url"]
 
@@ -193,7 +191,7 @@ async def _run_real_scaffold(
             job.status = "completed"
             job.progress = 100
             job.current_stage = "done"
-            job.completed_at = datetime.now(timezone.utc)
+            job.completed_at = datetime.now(UTC)
             await db.commit()
 
     # Also link the repo to the project

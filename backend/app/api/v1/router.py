@@ -1,28 +1,28 @@
 from fastapi import APIRouter
 
 from app.api.v1.endpoints import (
-    plans,
-    subscriptions,
     ai_planner,
     auth,
-    deployments,
-    maintenance,
-    releases,
-    teacher_notes,
-    workspace_ui,
-    development,
-    github_oauth,
     blueprint,
+    deployments,
+    development,
     gates,
+    github_oauth,
     health,
     ideas,
+    maintenance,
     phase_advance,
     phases,
     plan,
+    plans,
     projects,
+    releases,
     scaffold,
+    subscriptions,
+    teacher_notes,
     tenant,
     workspace,
+    workspace_ui,
 )
 
 api_router = APIRouter()

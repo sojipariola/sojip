@@ -209,7 +209,7 @@ async def validate_plan_gate(
                 )
                 user_message = (
                     "Project: " + project.name + chr(10) + chr(10) +
-                    "Nodes:" + chr(10) + chr(10).join(node_lines)
+                    "Tasks:" + chr(10) + task_list
                 )
                 ai_result = await ai.chat_json(
                     system_prompt=prompt_path.read_text(encoding="utf-8").strip(),
@@ -491,6 +491,7 @@ async def validate_deployment_gate(
     project = await _load_project_or_404(project_id, ctx, db)
 
     from sqlalchemy import select
+
     from app.models.deployment import Deployment
 
     stmt = (

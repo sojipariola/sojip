@@ -5,7 +5,7 @@ Every release is a shipped iteration — a version tag, a severity, and
 the student's own changelog entry.
 """
 import re
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException, status
@@ -177,7 +177,7 @@ async def create_release(
         severity=payload.severity,
         changelog=payload.changelog,
         commit_sha=payload.commit_sha,
-        deployed_at=datetime.now(timezone.utc),
+        deployed_at=datetime.now(UTC),
     )
     db.add(release)
     await db.flush()

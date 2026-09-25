@@ -16,9 +16,8 @@ Usage in an endpoint:
 `require_plan(key, check_count=lambda db, ctx, limit: ...)` lets you count
 current usage (e.g. how many projects already exist) and raise if over.
 """
+from collections.abc import Awaitable, Callable
 from dataclasses import dataclass
-from typing import Awaitable, Callable
-from uuid import UUID
 
 from fastapi import Depends, HTTPException, status
 from sqlalchemy import select
@@ -28,9 +27,9 @@ from app.api.v1.dependencies.tenant import get_tenant_context, get_tenant_db
 from app.core.tenant_context import TenantContext
 from app.models.plan import (
     PLAN_FREE,
-    Plan,
     STATUS_ACTIVE,
     STATUS_TRIALING,
+    Plan,
     Subscription,
 )
 

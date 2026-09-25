@@ -6,7 +6,6 @@ student can run from their laptop (or in Codespaces).
 """
 from typing import Literal
 
-
 TargetId = Literal[
     "railway", "fly", "vercel", "docker", "codespaces", "custom",
     "github_pages", "npm", "pypi", "chrome_store", "local_network", "download",

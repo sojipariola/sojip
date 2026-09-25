@@ -22,10 +22,10 @@ from app.schemas.plan import (
     CriticalPathResponse,
     DependencyCreate,
     PlanMetaUpdate,
+    PlanScheduleSummary,
     Task,
     TaskCreate,
     TaskGraph,
-    PlanScheduleSummary,
     TaskGraphDetailed,
     TaskGraphEnriched,
     TaskUpdate,
@@ -93,8 +93,10 @@ def _ensure_unlocked(artifact: Artifact) -> None:
 def _compute_summary(graph: TaskGraph) -> "PlanScheduleSummary":
     """Compute the schedule summary for the diagram view."""
     from app.core.critical_path import (
-        compute_schedule,
         compute_critical_path,
+        compute_schedule,
+    )
+    from app.core.critical_path import (
         has_cycle as _has_cycle,
     )
 

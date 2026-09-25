@@ -7,7 +7,6 @@ matches — used to recommend templates based on the Blueprint.
 """
 from app.schemas.scaffold import TemplateInfo
 
-
 TEMPLATES: list[TemplateInfo] = [
     TemplateInfo(
         id="nextjs-fastapi",

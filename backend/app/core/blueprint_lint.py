@@ -11,7 +11,6 @@ Schema reminder (flat, not nested):
 """
 from app.schemas.blueprint import SecurityIssue, SecurityReport, SystemDiagram
 
-
 MUTATING_METHODS = {"POST", "PUT", "PATCH", "DELETE"}
 
 
@@ -56,7 +55,10 @@ def lint_diagram(diagram: SystemDiagram) -> SecurityReport:
                 SecurityIssue(
                     severity="error",
                     edge_id=edge.id,
-                    message=method + " " + path + " (" + src + " → " + dst + ") is not authenticated.",
+                    message=(
+                        method + " " + path + " (" + src + " → " + dst + ")"
+                        " is not authenticated."
+                    ),
                     suggestion=(
                         "Public mutating endpoints are a common abuse vector. "
                         "Mark this edge as authenticated, or explicitly add an "

@@ -10,7 +10,6 @@ from uuid import UUID
 
 from pydantic import BaseModel, ConfigDict, Field
 
-
 # Minimum word count for the retrospective to pass the gate
 MIN_WORDS = 100
 

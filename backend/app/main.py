@@ -2,8 +2,8 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.api.v1.router import api_router
-from app.core.phases import PHASE_ORDER
 from app.config import settings
+from app.core.phases import PHASE_ORDER
 
 app = FastAPI(
     title="SOJIP Platform API",

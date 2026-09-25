@@ -10,14 +10,14 @@ Design:
 """
 import asyncio
 import os
-from typing import AsyncGenerator
+from collections.abc import AsyncGenerator
 from unittest.mock import AsyncMock, patch
 
 import pytest
 import pytest_asyncio
 from httpx import ASGITransport, AsyncClient
-from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 from sqlalchemy import text
+from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 
 # Ensure the app uses the test database BEFORE any app import
 os.environ["DATABASE_URL"] = (
@@ -27,7 +27,6 @@ os.environ["ENVIRONMENT"] = "test"
 
 from app.core.database import AsyncSessionLocal, engine  # noqa: E402
 from app.main import app  # noqa: E402
-
 
 # ─── Event loop ──────────────────────────────────────────
 # pytest-asyncio==0.24.0 requires a session-scoped event loop fixture to be defined in conftest.py.
@@ -65,9 +64,9 @@ def _apply_migrations():
         )
 
     # Seed the three standard plans (idempotent — checks slug first).
-    import asyncio
     from sqlalchemy import select
-    from app.models.plan import PLAN_FREE, PLAN_PRO, PLAN_INSTITUTION, Plan
+
+    from app.models.plan import PLAN_FREE, PLAN_INSTITUTION, PLAN_PRO, Plan
 
     async def _seed_plans():
         async with AsyncSessionLocal() as s:
@@ -125,8 +124,8 @@ async def client(db_session: AsyncSession) -> AsyncGenerator[AsyncClient, None]:
     Overrides the app's `get_db` to use our rolled-back session so
     changes made during a test vanish at teardown.
     """
-    from app.core.database import get_db
     from app.api.v1.dependencies.tenant import get_tenant_db
+    from app.core.database import get_db
 
     async def _override_get_db():
         yield db_session
@@ -226,8 +225,9 @@ async def alpha_tenant(db_session: AsyncSession):
     await db_session.flush()
 
     # Free subscription so the tenant isn't stuck without a plan.
-    from app.models.plan import PLAN_FREE, Plan, Subscription
     from sqlalchemy import select
+
+    from app.models.plan import PLAN_FREE, Plan, Subscription
 
     plan = (await db_session.execute(
         select(Plan).where(Plan.slug == PLAN_FREE)

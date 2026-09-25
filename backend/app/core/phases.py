@@ -7,7 +7,6 @@ imports from this module. Never duplicate these lists.
 """
 from typing import Literal
 
-
 PhaseId = Literal[
     "idea",
     "plan",

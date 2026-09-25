@@ -5,7 +5,7 @@ Provides:
 - AI code review of individual commits
 - List of past reviews for a project
 """
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 from uuid import UUID, uuid4
 
@@ -193,7 +193,7 @@ async def review_commit(
             concern=None,
             reasoning="No diff to review.",
             model="",
-            created_at=datetime.now(timezone.utc),
+            created_at=datetime.now(UTC),
         )
 
     # Blueprint context
@@ -265,7 +265,7 @@ async def review_commit(
         concern=concern,
         reasoning=reasoning,
         model=ai.model,
-        created_at=datetime.now(timezone.utc),
+        created_at=datetime.now(UTC),
     )
 
 

@@ -21,7 +21,6 @@ from app.repositories.project import ProjectRepository
 from app.schemas.blueprint import (
     DiagramEdge,
     DiagramNode,
-    SecurityIssue,
     SecurityReport,
     SystemDiagram,
     SystemDiagramRead,
