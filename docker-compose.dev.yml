@@ -1,7 +1,8 @@
+name: sojip
+
 services:
   postgres:
     image: postgres:15-alpine
-    container_name: sojip-postgres
     stop_signal: SIGTERM
     stop_grace_period: 60s
     environment:
@@ -31,7 +32,6 @@ services:
 
   redis:
     image: redis:7-alpine
-    container_name: sojip-redis
     stop_signal: SIGTERM
     stop_grace_period: 60s
     ports:
@@ -46,7 +46,6 @@ services:
     build:
       context: ./backend
       dockerfile: Dockerfile.dev
-    container_name: sojip-backend
     user: "${UID:-1000}:${GID:-1000}"
     env_file:
       - .env
@@ -74,7 +73,6 @@ services:
     build:
       context: ./frontend
       dockerfile: Dockerfile.dev
-    container_name: sojip-frontend
     environment:
       - NEXT_PUBLIC_API_URL=http://localhost:8020/api/v1
     ports:
@@ -88,7 +86,6 @@ services:
 
   ollama:
     image: ollama/ollama:latest
-    container_name: sojip-ollama
     stop_signal: SIGTERM
     stop_grace_period: 60s
     ports:
