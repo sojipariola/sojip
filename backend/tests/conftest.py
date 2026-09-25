@@ -19,11 +19,13 @@ from httpx import ASGITransport, AsyncClient
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 
-# Ensure the app uses the test database BEFORE any app import
-os.environ["DATABASE_URL"] = (
-    "postgresql+asyncpg://sojip_user:sojip_pass@postgres:5432/sojip_test"
+# Ensure the app uses the test database BEFORE any app import.
+# Use setdefault so CI can override via its own env (localhost instead of postgres).
+os.environ.setdefault(
+    "DATABASE_URL",
+    "postgresql+asyncpg://sojip_user:sojip_pass@postgres:5432/sojip_test",
 )
-os.environ["ENVIRONMENT"] = "test"
+os.environ.setdefault("ENVIRONMENT", "test")
 
 from app.core.database import AsyncSessionLocal, engine  # noqa: E402
 from app.main import app  # noqa: E402

@@ -317,20 +317,7 @@ function SupportDrawer({
           )}
           {activeTab === "mentor" && (
             <div className="p-4">
-              <AIMentorPanel
-                projectId={projectId}
-                gate={
-                  phase === "deployment"
-                    ? "maintenance"
-                    : (phase as
-                        | "idea"
-                        | "plan"
-                        | "blueprint"
-                        | "scaffold"
-                        | "development"
-                        | "maintenance")
-                }
-              />
+              <AIMentorPanel projectId={projectId} gate={phase} />
             </div>
           )}
         </div>

@@ -173,6 +173,8 @@ export function BlueprintCanvas({
         kind: original?.kind || "data_flow",
         method: original?.method ?? null,
         path: original?.path ?? null,
+        authenticated: original?.authenticated ?? true,
+        rate_limited: original?.rate_limited ?? false,
       };
     });
     onChange(mappedNodes, mappedEdges);
@@ -191,6 +193,8 @@ export function BlueprintCanvas({
         kind: "data_flow",
         method: null,
         path: null,
+        authenticated: true,
+        rate_limited: false,
       };
 
       setFlowEdges((eds) => addEdge(connection, eds));

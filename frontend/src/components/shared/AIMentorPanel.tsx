@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Bot, Loader2, Sparkles } from "lucide-react";
 
 import { apiFetch } from "@/lib/api-client";
+import type { PhaseId } from "@/lib/phases";
 
 export type GateResult = {
   gate: string;
@@ -15,23 +16,18 @@ export type GateResult = {
 
 interface Props {
   projectId: string;
-  gate:
-    | "idea"
-    | "plan"
-    | "blueprint"
-    | "scaffold"
-    | "development"
-    | "maintenance";
+  gate: PhaseId;
   description?: string;
   onResult?: (result: GateResult) => void;
 }
 
-const DEFAULT_DESCRIPTIONS: Record<string, string> = {
+const DEFAULT_DESCRIPTIONS: Record<PhaseId, string> = {
   idea: "Your AI Mentor reads your canvas and asks a pointed question about the weakest part. Be ready to answer it.",
   plan: "Your AI Mentor reads your task graph and asks whether the durations, dependencies, and scope are realistic.",
   blueprint: "Your AI Mentor reads your system diagram and asks about the architecture gaps.",
   scaffold: "Your AI Mentor checks whether your scaffold matches your blueprint.",
   development: "Your AI Mentor reviews your latest commits against your blueprint.",
+  deployment: "Your AI Mentor reviews your deployment plan and environment configuration.",
   maintenance: "Your AI Mentor reviews your retrospective and the state of the codebase.",
 };
 
