@@ -10,13 +10,15 @@ Design:
 """
 import asyncio
 import os
+import subprocess
 from collections.abc import AsyncGenerator
+from pathlib import Path
 from unittest.mock import AsyncMock, patch
 
 import pytest
 import pytest_asyncio
 from httpx import ASGITransport, AsyncClient
-from sqlalchemy import text
+from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 
 # Ensure the app uses the test database BEFORE any app import.
@@ -30,15 +32,9 @@ os.environ.setdefault("ENVIRONMENT", "test")
 from app.core.database import AsyncSessionLocal, engine  # noqa: E402
 from app.main import app  # noqa: E402
 
-# ─── Event loop ──────────────────────────────────────────
-# pytest-asyncio==0.24.0 requires a session-scoped event loop fixture to be defined in conftest.py.
-# pytest-asyncio 0.24 handles loop scope via asyncio_default_fixture_loop_scope — no manual fixture needed.
-# @pytest.fixture(scope="session")
-# def event_loop():
-#     """Single loop for the whole session so async fixtures can share state."""
-#     loop = asyncio.new_event_loop()
-#     yield loop
-#     loop.close()
+# Resolve the backend root (parent of tests/) so subprocess calls
+# work both in the local container (/app) and in CI (~/work/.../backend).
+BACKEND_ROOT = Path(__file__).resolve().parent.parent
 
 
 # ─── Alembic migrations ──────────────────────────────────
@@ -50,12 +46,9 @@ def _apply_migrations():
     We shell out rather than importing alembic's internals — the CLI is
     the documented interface and handles env.py properly.
     """
-    import subprocess
-    import sys
-
     result = subprocess.run(
         ["alembic", "upgrade", "head"],
-        cwd="/app",
+        cwd=str(BACKEND_ROOT),
         capture_output=True,
         text=True,
     )
@@ -66,8 +59,6 @@ def _apply_migrations():
         )
 
     # Seed the three standard plans (idempotent — checks slug first).
-    from sqlalchemy import select
-
     from app.models.plan import PLAN_FREE, PLAN_INSTITUTION, PLAN_PRO, Plan
 
     async def _seed_plans():
@@ -227,8 +218,6 @@ async def alpha_tenant(db_session: AsyncSession):
     await db_session.flush()
 
     # Free subscription so the tenant isn't stuck without a plan.
-    from sqlalchemy import select
-
     from app.models.plan import PLAN_FREE, Plan, Subscription
 
     plan = (await db_session.execute(
